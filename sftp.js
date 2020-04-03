@@ -39,16 +39,6 @@ module.exports = function(RED) {
 					text: "connecting"
 				});
 	
-				/*
-				let sftp = new Client();
-	
-				await sftp.connect({
-					host: node.server.host,
-					port: node.server.port,
-					username: node.server.username,
-					password: node.server.password
-				})*/
-
 				await sftp.connect({ 
 					host: node.server.host,
 					port: node.server.port,
@@ -57,8 +47,8 @@ module.exports = function(RED) {
 
 
 				node.status({
-					fill: "purple",
-					shape: "dot",
+					fill: "yellow",
+					shape: "ring",
 					text: "connected"
 				});
 	
