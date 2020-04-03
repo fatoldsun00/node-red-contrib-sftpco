@@ -23,12 +23,14 @@ module.exports = function(RED) {
 		}
 
 		node.server = RED.nodes.getNode(config.server);
-
+		
 		this.listenInput()
 	}
 
 	SFTPNode.prototype.listenInput = function (){
 		let node = this
+		const sftp =  new Client();
+		
 		node.on('input', async function(msg) {
 			try {
 				node.status({
@@ -37,15 +39,23 @@ module.exports = function(RED) {
 					text: "connecting"
 				});
 	
-				var sftp = new Client();
+				/*
+				let sftp = new Client();
 	
 				await sftp.connect({
 					host: node.server.host,
 					port: node.server.port,
 					username: node.server.username,
 					password: node.server.password
-				})
-	
+				})*/
+
+				await sftp.connect({ 
+					host: node.server.host,
+					port: node.server.port,
+					username: node.server.username,
+					password: node.server.password});
+
+
 				node.status({
 					fill: "purple",
 					shape: "dot",
@@ -79,16 +89,17 @@ module.exports = function(RED) {
 								let file = remotePath.substring(remotePath.lastIndexOf('/')+1)
 								let localFile = localFilePath
 								if (localFilePathIsDir) localFile = path.join(localFilePath,file)
-
+								localFile=path.normalize(localFile)
 								payload.push(await sftp.get(remotePath,localFile))
 							}
 						} else {
+							let file = remoteFilePath.substring(remoteFilePath.lastIndexOf('/')+1)	
 							let localFile = localFilePath
 							if (localFilePathIsDir) localFile = path.join(localFilePath,file)
-							payload = await sftp.get(remoteFilePath,localFile)
+							await sftp.get(remoteFilePath,localFile)
 						}
 
-						msg = msg.payload
+						msg.payload = msg
 						node.send([msg,null])
 					break;
 
@@ -116,6 +127,21 @@ module.exports = function(RED) {
 
 						msg.payload = payload
 						node.send([msg,null])
+					break;	
+					case "delete":
+						remoteFilePath = RED.util.evaluateNodeProperty(node.remoteFilePath,node.remoteFilePathType,node,msg)
+						if (!remoteFilePath) throw new Error('Remote path undefined')
+						
+						if (Array.isArray(remoteFilePath)){
+							payload=[]
+							for(remotePath of remoteFilePath){
+								await sftp.delete(remotePath)
+								payload.push(remotePath)
+							}
+						} else {
+							await sftp.delete(remoteFilePath)
+							payload = remoteFilePath
+						}
 					break;	
 				}
 

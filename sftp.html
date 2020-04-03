@@ -95,7 +95,10 @@
                 } else if ($("#node-input-method").val() === "put") {
                     $("#node-input-remoteFilePath").parent().show();
                     $("#node-input-localFilePath").parent().show();
+                } else if ($("#node-input-method").val() === "delete") {
+                    $("#node-input-remoteFilePath").parent().show();
                 }
+
             });
         },
         oneditsave: function() { 
@@ -122,6 +125,7 @@
             <option value='list'>List</option>
             <option value='get'>Get</option>
             <option value='put'>Put</option>
+            <option value='delete'>Delete</option>
         </select>
     </div>
 
