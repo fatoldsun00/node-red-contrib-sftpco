@@ -1,14 +1,14 @@
 {
   "name": "node-red-contrib-sftpco",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Node red contrib for CRUD operations on SFTP server, wrapper for ssh2-sftp-client",
-  "main": "sftp.js",
+  "main": "sftpco.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "node-red": {
     "nodes": {
-      "sftp.js": "sftp.js"
+      "sftpco.js": "sftpco.js"
     }
   },
   "repository": {
