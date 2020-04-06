@@ -15,6 +15,14 @@
     "type": "git",
     "url": "git+https://github.com/fatoldsun00/node-red-contrib-sftpco.git"
   },
+  "keywords": [
+    "nodered",
+    "node-red",
+    "node red",
+    "sftp",
+    "ssh ftp",
+    "ftp ssh"
+  ],
   "author": "FatOldSun",
   "license": "ISC",
   "bugs": {
