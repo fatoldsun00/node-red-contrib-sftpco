@@ -31,7 +31,7 @@ module.exports = function(RED) {
 		let node = this
 		const sftp =  new Client();
 		
-		node.on('input', async function(msg) {
+		node.on('input', async function(msg,send,done) {
 			try {
 				node.status({
 					fill: "grey",
@@ -61,7 +61,7 @@ module.exports = function(RED) {
 						msg.payload = payload.map((r)=>{	
 							return remoteFilePath+"/"+r.name
 						})
-						node.send(msg)
+						send([msg,null])
 					break;
 							
 					case "get":
@@ -90,7 +90,7 @@ module.exports = function(RED) {
 						}
 
 						msg.payload = payload
-						node.send([msg,null])
+						send([msg,null])
 					break;
 
 					case "put":
@@ -116,7 +116,7 @@ module.exports = function(RED) {
 						}
 
 						msg.payload = payload
-						node.send([msg,null])
+						send([msg,null])
 					break;	
 					case "delete":
 						remoteFilePath = RED.util.evaluateNodeProperty(node.remoteFilePath,node.remoteFilePathType,node,msg)
@@ -133,7 +133,7 @@ module.exports = function(RED) {
 							payload = remoteFilePath
 						}
 						msg.payload = payload
-						node.send([msg,null])
+						send([msg,null])
 					break;	
 				}
 
@@ -142,6 +142,7 @@ module.exports = function(RED) {
 					shape: "dot",
 					text: node.method+" done !"
 				});
+				done()
 			} catch (err) {
 				console.log(err);
 				node.status({
@@ -149,7 +150,8 @@ module.exports = function(RED) {
 					shape: "dot",
 					text: "Error :"+ err.message
 				});
-				node.send([null,{err,inputMsg: msg}])
+				send([null,{err,inputMsg: msg}])
+				done(err)
 			} finally {
 				sftp.end()
 			}
