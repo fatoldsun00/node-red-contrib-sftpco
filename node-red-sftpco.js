@@ -144,7 +144,6 @@ module.exports = function(RED) {
 				});
 				done()
 			} catch (err) {
-				console.log(err);
 				node.status({
 					fill: "red",
 					shape: "dot",
