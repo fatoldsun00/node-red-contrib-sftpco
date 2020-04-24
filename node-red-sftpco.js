@@ -152,7 +152,9 @@ module.exports = function(RED) {
 				send([null,{err,inputMsg: msg}])
 				done(err)
 			} finally {
-				sftp.end()
+				try {
+					sftp.end()
+				} catch (err) {}
 			}
 		})
 	}
