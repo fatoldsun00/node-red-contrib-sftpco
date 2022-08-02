@@ -39,13 +39,19 @@ module.exports = function(RED) {
 					text: "connecting"
 				});
 	
+// TO ENABLE CONSOLE DEBUGGING OF ssh2-sftp-client
+//				await sftp.connect({ 
+//					host: node.server.host,
+//					port: node.server.port,
+//					username: node.server.username,
+//					password: node.server.password,
+//					debug: console.info});
 				await sftp.connect({ 
 					host: node.server.host,
 					port: node.server.port,
 					username: node.server.username,
-					password: node.server.password,
-					debug: console.info});
-
+					password: node.server.password});
+				
 				node.status({
 					fill: "yellow",
 					shape: "ring",
