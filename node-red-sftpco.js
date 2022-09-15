@@ -29,23 +29,29 @@ module.exports = function(RED) {
 
 	SFTPNode.prototype.listenInput = function (){
 		let node = this
-		const sftp =  new Client();
-		
+				
 		node.on('input', async function(msg,send,done) {
-			try {
+			let sftp = new Client();
+			try {				
 				node.status({
 					fill: "grey",
 					shape: "dot",
 					text: "connecting"
 				});
 	
+// TO ENABLE CONSOLE DEBUGGING OF ssh2-sftp-client
+//				await sftp.connect({ 
+//					host: node.server.host,
+//					port: node.server.port,
+//					username: node.server.username,
+//					password: node.server.password,
+//					debug: console.info});
 				await sftp.connect({ 
 					host: node.server.host,
 					port: node.server.port,
 					username: node.server.username,
 					password: node.server.password});
-
-
+				
 				node.status({
 					fill: "yellow",
 					shape: "ring",
@@ -98,7 +104,7 @@ module.exports = function(RED) {
 						localFilePath = RED.util.evaluateNodeProperty(node.localFilePath,node.localFilePathType,node,msg)
 
 						if (!remoteFilePath) throw new Error('Remote path undefined')
-						if (!localFilePath) throw new Error('Local path  undefined')
+						if (!localFilePath) throw new Error('Local path undefined')
 						
 						if (Array.isArray(localFilePath)){
 							payload=[]
@@ -108,9 +114,15 @@ module.exports = function(RED) {
 								await sftp.put(localPath,path.posix.join(remoteFilePath,file))
 								payload.push(localPath)
 							}
-						} else {
+						} else {																	
 							localFilePath=path.normalize(localFilePath)
 							let file = path.basename(localFilePath)
+							node.status({
+								fill: "yellow",
+								shape: "ring",
+								text: "Put:" + path.posix.join(remoteFilePath,file)
+							});
+							
 							await sftp.put(localFilePath,path.posix.join(remoteFilePath,file))
 							payload = localFilePath
 						}
@@ -141,8 +153,9 @@ module.exports = function(RED) {
 					fill: "green",
 					shape: "dot",
 					text: node.method+" done !"
-				});
-				done()
+				});	
+				
+				done()				
 			} catch (err) {
 				node.status({
 					fill: "red",
@@ -153,9 +166,10 @@ module.exports = function(RED) {
 				done(err)
 			} finally {
 				try {
-					sftp.end()
+					sftp.end()					
 				} catch (err) {}
 			}
+			
 		})
 	}
 
